@@ -29,7 +29,7 @@ export default function LandingPage(){
                     title="Get My Learning Roadmap"
                     description="Already know your desired career? We'll create a personalized learning plan to help you reach your professional goals."
                     buttonLabel="Create Roadmap"
-                    buttonHref="/roadmap"
+                    buttonHref="/chooseCareer"
                     buttonColor="bg-[#22C55E]"
                     iconBgColor="bg-[#DCFCE7]"
                     />
