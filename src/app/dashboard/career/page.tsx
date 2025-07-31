@@ -5,7 +5,7 @@ interface Props {
   searchParams?: { [key: string]: string | string[] | undefined };
 }
 
-export default function CareerPage({ searchParams }: Props) {
+export default async function CareerPage({ searchParams }: Props) {
   const careerId = typeof searchParams?.id === 'string' ? searchParams.id : undefined;
 
   return (
