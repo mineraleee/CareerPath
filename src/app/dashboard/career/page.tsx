@@ -2,11 +2,11 @@ import CareerCoursePage from './careerclient/page';
 import { Navbar } from './components/navbar';
 
 interface Props {
-  searchParams: { id?: string };
+  searchParams?: { [key: string]: string | string[] | undefined };
 }
 
 export default function CareerPage({ searchParams }: Props) {
-  const careerId = searchParams.id;
+  const careerId = typeof searchParams?.id === 'string' ? searchParams.id : undefined;
 
   return (
     <div>
