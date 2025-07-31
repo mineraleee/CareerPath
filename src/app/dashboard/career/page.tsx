@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import axios from 'axios';
 import CourseCard from './components/CourseCard';
@@ -125,7 +126,8 @@ export default function CareerCoursePage() {
   const { career_info, roadmap } = roadmapData;
 
   return (
-    <div>
+    <Suspense fallback={<div>Loading...</div>}>
+      <div>
       <Navbar />
       <div className="p-6 md:p-10 bg-gray-50 min-h-screen">
         <div className="mb-8">
@@ -249,5 +251,7 @@ export default function CareerCoursePage() {
         </div>
       </div>
     </div>
+    </Suspense>
+  
   );
 }
