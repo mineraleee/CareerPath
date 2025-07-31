@@ -40,8 +40,16 @@ export default function AssessmentPage() {
     if (current < questions.length - 1) {
       setCurrent(current + 1);
     } else {
+      const user_id = localStorage.getItem("user_id");
+      const token = localStorage.getItem("access_token");
+
+      if (!user_id || !token) {
+        console.error("User not logged in");
+        return;
+      }
+
       const payload = {
-        user_id: "user123",
+        user_id,
         answers: Object.entries(answers).map(([id, answer]) => ({
           question_id: Number(id),
           answer,
@@ -49,16 +57,21 @@ export default function AssessmentPage() {
       };
 
       axios
-        .post("https://career-path-api.onrender.com/api/assess-career", payload)
+        .post("https://career-path-api.onrender.com/api/assess-career", payload, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
         .then((res) => {
           console.log("Assessment result:", res.data);
-          // router.push("/"); 
+          router.push("/dashboard"); 
         })
         .catch((err) => {
           console.error("Submission failed:", err);
         });
     }
   };
+
 
   const handleBack = () => {
     if (current > 0) setCurrent(current - 1);
