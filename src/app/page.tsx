@@ -1,103 +1,154 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { z } from "zod";
+import Heading2 from "@/components/typography/Heading2";
 import Image from "next/image";
 
-export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+const registerSchema = z.object({
+  email: z.string().email({ message: "Please enter a valid email address." }),
+  full_name: z.string().min(3, { message: "Full name must be at least 3 characters." }),
+  password: z.string().min(8, { message: "Password must be at least 8 characters." }),
+});
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+export default function RegisterPage() {
+  const [email, setEmail] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [password, setPassword] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
+  const router = useRouter();
+
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setFieldErrors({});
+
+    const formData = {
+      email,
+      full_name: fullName,
+      password,
+    };
+
+    const parsed = registerSchema.safeParse(formData);
+
+    if (!parsed.success) {
+        const errors: { [key: string]: string } = {};
+        parsed.error.issues.forEach((issue) => {
+        const field = issue.path[0];
+        if (typeof field === "string") {
+            errors[field] = issue.message;
+        }
+        });
+        setFieldErrors(errors);
+        return;
+    }
+
+    try {
+      const response = await fetch("https://career-path-api.onrender.com/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      router.push("/login");
+    } catch (err: any) {
+      setFieldErrors({ general: err.message || "Failed to register" });
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <form
+        onSubmit={handleRegister}
+        className="bg-white p-8 rounded shadow-md w-full max-w-md"
+      >
+        <div className="mb-5">
+          <div className="flex items-center gap-3 justify-center">
             <Image
               className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+              src="/register.png"
+              alt="register logo"
+              width={40}
+              height={40}
+              priority
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+            <Heading2>Sister in Tech</Heading2>
+          </div>
+          <div className="flex justify-center mt-3">
+            <Heading2>Create your account</Heading2>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+
+        {/* Full Name */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700">Full Name</label>
+          <input
+            type="text"
+            placeholder="Enter your full name"
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
+            className="w-full px-4 py-2 border rounded-md mt-1"
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
+          {fieldErrors.full_name && (
+            <p className="text-red-500 text-sm mt-1">{fieldErrors.full_name}</p>
+          )}
+        </div>
+
+        {/* Email */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700">Email</label>
+          <input
+            type="email"
+            placeholder="Enter your email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full px-4 py-2 border rounded-md mt-1"
           />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
+          {fieldErrors.email && (
+            <p className="text-red-500 text-sm mt-1">{fieldErrors.email}</p>
+          )}
+        </div>
+
+        {/* Password */}
+        <div className="mb-6">
+          <label className="block text-sm font-medium text-gray-700">Password</label>
+          <input
+            type="password"
+            placeholder="Create a password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full px-4 py-2 border rounded-md mt-1"
           />
-          Go to nextjs.org →
-        </a>
-      </footer>
+          <p className="text-gray-500 text-sm mt-1">Must be at least 8 characters</p>
+          {fieldErrors.password && (
+            <p className="text-red-500 text-sm mt-1">{fieldErrors.password}</p>
+          )}
+        </div>
+
+        {/* General error */}
+        {fieldErrors.general && (
+          <p className="text-red-500 text-sm mb-4">{fieldErrors.general}</p>
+        )}
+
+        <button
+          type="submit"
+          className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 font-semibold"
+        >
+          Sign Up
+        </button>
+        <div className="pt-5 flex justify-center">
+          <p className="text-sm">
+            Already have an account?{" "}
+            <a href="/login" className="text-blue-600 hover:underline font-medium">
+              Sign in
+            </a>
+          </p>
+        </div>
+      </form>
     </div>
   );
 }

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Listbox } from '@headlessui/react';
 import { Check, ChevronDown } from 'lucide-react';
 import Heading2 from '@/components/typography/Heading2';
@@ -17,10 +18,19 @@ interface CardProps {
 
 export default function Card({ careers, onSelect }: CardProps) {
   const [selectedCareer, setSelectedCareer] = useState<Career | null>(null);
+  const router = useRouter();
 
   const handleChange = (career: Career) => {
     setSelectedCareer(career);
     onSelect(career.career_id);
+  };
+
+  const handleViewRoadmap = () => {
+    if (selectedCareer) {
+      router.push(`/dashboard/career?id=${selectedCareer.career_id}`);
+    } else {
+      alert('Please select a career path first!');
+    }
   };
 
   return (
@@ -67,7 +77,10 @@ export default function Card({ careers, onSelect }: CardProps) {
         </div>
       </Listbox>
 
-      <button className="w-full bg-[#0EA5E9] hover:bg-[#0284C7] text-white py-2 rounded-lg font-semibold transition mt-2">
+      <button
+        onClick={handleViewRoadmap}
+        className="w-full bg-[#0EA5E9] hover:bg-[#0284C7] text-white py-2 rounded-lg font-semibold transition mt-2"
+      >
         View Roadmap
       </button>
 

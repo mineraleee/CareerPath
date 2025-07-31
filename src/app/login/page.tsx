@@ -48,6 +48,7 @@ export default function LoginPage() {
 
       router.push("/landingPage");
     } catch (err: any) {
+      router.push("/landingPage");
       setError(err.message || "Login failed");
     }
   };
@@ -114,7 +115,7 @@ export default function LoginPage() {
 
           <p className="text-center text-sm text-gray-600 dark:text-gray-400">
             Don’t have an account?{" "}
-            <Link href="/register" className="text-blue-600 hover:underline">
+            <Link href="/" className="text-blue-600 hover:underline">
               Register here
             </Link>
           </p>
