@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import axios from 'axios';
-import CourseCard from '../CourseCard';
+import CourseCard from './components/CourseCard';
 import { Navbar } from './components/navbar';
 
 interface Course {
@@ -83,9 +83,6 @@ export default function CareerCoursePage() {
         const [roadmapRes, coursesRes] = await Promise.all([
           axios.get(`https://career-path-api.onrender.com/api/roadmap/${careerId}`),
           axios.get(`https://career-path-api.onrender.com/api/courses/career/${careerId}`, {
-            headers: {
-              Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyIiwiZXhwIjoxNzUzOTY5NjUwfQ.k0Ez7J-Wi4b-3DnmGqXMzvpaYv7HjSzaOxrWYHeqIUI`,
-            },
           }),
         ]);
 
@@ -113,12 +110,7 @@ export default function CareerCoursePage() {
       queryParams.append('offset', '0');
 
       const response = await axios.get(
-        `https://career-path-api.onrender.com/api/courses/filter?${queryParams.toString()}`,
-        {
-          headers: {
-            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyIiwiZXhwIjoxNzUzOTY5NjUwfQ.k0Ez7J-Wi4b-3DnmGqXMzvpaYv7HjSzaOxrWYHeqIUI`,
-          },
-        }
+        `https://career-path-api.onrender.com/api/courses/filter?${queryParams.toString()}`
       );
 
       setCourses(response.data.courses);

@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Navbar } from "@/app/landingPage/components/navbar";
 import Image from "next/image";
 import Heading2 from "@/components/typography/Heading2";
 
@@ -48,14 +47,12 @@ export default function LoginPage() {
 
       router.push("/landingPage");
     } catch (err: any) {
-      router.push("/landingPage");
       setError(err.message || "Login failed");
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-[#0F172A] transition-colors">
-      <Navbar />
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-[#0F172A] transition-colors">
       <main className="flex flex-col items-center justify-center px-4 py-12">
         <div className="w-full max-w-md bg-white dark:bg-gray-800 shadow-md rounded-xl p-8 space-y-6">
           <div className="mb-2">

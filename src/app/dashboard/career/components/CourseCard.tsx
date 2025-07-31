@@ -20,7 +20,7 @@ interface Course {
 export default function CourseCard({ course }: { course: Course }) {
   return (
     <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-100">
-      <div className="h-36 bg-gradient-to-r from-[#0EA5E9] to-[#0284C7] flex items-center justify-center text-white text-xl font-semibold">
+      <div className="h-36 bg-gradient-to-r from-[#0EA5E9] to-[#6366F1] flex items-center justify-center text-white text-xl font-semibold">
         U/X
       </div>
 
