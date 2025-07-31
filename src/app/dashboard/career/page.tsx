@@ -4,9 +4,11 @@ import { Navbar } from './components/navbar';
 export default async function CareerPage({
   searchParams,
 }: {
-  searchParams?: { [key: string]: string | string[] | undefined };
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const careerId = typeof searchParams?.id === 'string' ? searchParams.id : undefined;
+  // Await the searchParams since it's now a Promise in Next.js 15
+  const resolvedSearchParams = await searchParams;
+  const careerId = typeof resolvedSearchParams?.id === 'string' ? resolvedSearchParams.id : undefined;
 
   return (
     <div>
