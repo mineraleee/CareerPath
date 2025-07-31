@@ -4,47 +4,74 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import CareerSummary from "./components/CareerSummary";
 import CourseCard from "./components/CourseCard";
+import { Navbar } from "./career/components/navbar";
 
-interface RecommendationResponse {
-  recommended_career: string;
-  description: string;
-  average_salary: string;
-  job_growth: string;
-  match_score: number;
-  learning_path: {
-    step: number;
-    title: string;
-    status: "Completed" | "In Progress" | "Pending";
-  }[];
-  recommended_courses: {
-    title: string;
+interface Course {
+  course_id: string;
+  title: string;
+  organization: string;
+  rating: number;
+  difficulty: string;
+  duration: string;
+  skills: string[];
+  is_free: boolean;
+}
+
+interface ApiResponse {
+  status: string;
+  assessment_summary: {
+    questions_answered: number;
+    required_questions_answered: number;
+    assessment_completeness: number;
+  };
+  career_recommendation: {
+    career_id: string;
+    career_name: string;
+    match_percentage: number;
     description: string;
-    price: string;
-    duration: string;
-    level: string;
-    rating: number;
-    total_reviews: number;
+    key_skills_mentioned: string[];
+    related_qa_count: number;
+  };
+  course_recommendations: Course[];
+  confidence_score: number;
+  alternatives: {
+    career_id: string;
+    career_name: string;
+    match_percentage: number;
   }[];
 }
 
 export default function DashboardPage() {
-  const [data, setData] = useState<RecommendationResponse | null>(null);
+  const [data, setData] = useState<ApiResponse | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Simulasi user_id tetap
+    const user_id = localStorage.getItem("user_id");
+    const token = localStorage.getItem("access_token");
+    const storedAnswers = localStorage.getItem("answers");
+
+    if (!user_id || !token || !storedAnswers) {
+      console.error("Missing user_id, token, or answers");
+      return;
+    }
+
     const payload = {
-      user_id: "user123"
+      user_id,
+      answers: JSON.parse(storedAnswers),
     };
 
     axios
-      .post("https://career-path-api.onrender.com/api/assess-career", payload)
+      .post("https://career-path-api.onrender.com/api/assess-career", payload, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
       .then((res) => {
         setData(res.data);
         setLoading(false);
       })
       .catch((err) => {
-        console.error("Error fetching recommendation:", err);
+        console.error("Error fetching recommendation:", err.response?.data || err);
         setLoading(false);
       });
   }, []);
@@ -57,51 +84,49 @@ export default function DashboardPage() {
     return <div className="text-center p-10 text-red-500">Failed to load recommendation data.</div>;
   }
 
+  const recommendation = data.career_recommendation;
+
   return (
-    <div className="p-6 md:p-12 bg-gray-50 min-h-screen">
-      <h1 className="text-3xl font-bold mb-2 text-gray-800">
-        Your recommended career is:{" "}
-        <span className="text-blue-600">{data.recommended_career}</span>
-      </h1>
-      <p className="text-gray-600 mb-6 max-w-2xl">{data.description}</p>
+    <div>
+      <Navbar/>
+      <div className="p-6 md:p-12 bg-gray-50 min-h-screen">
+        <h1 className="text-3xl font-bold mb-2 text-gray-800">
+          Your recommended career is:{" "}
+          <span className="text-[#0EA5E9]">{recommendation.career_name}</span>
+        </h1>
+        <p className="text-gray-600 mb-6 max-w-2xl">{recommendation.description}</p>
 
-      <CareerSummary
-        salary={data.average_salary}
-        growth={data.job_growth}
-        score={data.match_score}
-      />
+        <CareerSummary
+          salary="—"
+          growth="—"
+          score={recommendation.match_percentage}
+        />
 
-      <section className="mt-8">
-        <h2 className="text-xl font-semibold mb-4 text-gray-800">Your Learning Roadmap</h2>
-        <ol className="space-y-4">
-          {data.learning_path.map((step) => (
-            <li key={step.step} className="p-4 rounded border bg-white shadow-sm flex justify-between">
-              <span>{step.step}. {step.title}</span>
-              <span className={`text-sm font-medium ${getStatusColor(step.status)}`}>{step.status}</span>
-            </li>
-          ))}
-        </ol>
-      </section>
+        {/* Optional: key skills */}
+        <section className="mt-6">
+          <h2 className="text-xl font-semibold mb-2 text-gray-800">Key Skills</h2>
+          <ul className="flex flex-wrap gap-2">
+            {recommendation.key_skills_mentioned.map((skill, idx) => (
+              <li
+                key={idx}
+                className="bg-blue-100 text-[#0EA5E9] px-3 py-1 rounded-full text-sm"
+              >
+                {skill}
+              </li>
+            ))}
+          </ul>
+        </section>
 
-      <section className="mt-10">
-        <h2 className="text-xl font-semibold mb-4 text-gray-800">Recommended Courses & Certifications</h2>
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {data.recommended_courses.map((course, idx) => (
-            <CourseCard key={idx} course={course} />
-          ))}
-        </div>
-      </section>
+        <section className="mt-10">
+          <h2 className="text-xl font-semibold mb-4 text-gray-800">Recommended Courses</h2>
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {data.course_recommendations.map((course) => (
+              <CourseCard key={course.course_id} course={course} />
+            ))}
+          </div>
+        </section>
+      </div>
     </div>
+    
   );
-}
-
-function getStatusColor(status: string) {
-  switch (status) {
-    case "Completed":
-      return "text-green-600";
-    case "In Progress":
-      return "text-yellow-600";
-    default:
-      return "text-gray-500";
-  }
 }

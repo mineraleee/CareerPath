@@ -17,7 +17,7 @@ export default function CareerSummary({ salary, growth, score }: Props) {
       </div>
       <div className="bg-white shadow rounded-lg px-6 py-4 text-center">
         <p className="text-sm text-gray-500">Match Score</p>
-        <p className="text-lg font-semibold text-blue-600">{score}%</p>
+        <p className="text-lg font-semibold text-[#0EA5E9]">{score}%</p>
       </div>
     </div>
   );

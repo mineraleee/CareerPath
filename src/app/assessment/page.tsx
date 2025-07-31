@@ -57,15 +57,18 @@ export default function AssessmentPage() {
       };
 
       axios
-        .post("https://career-path-api.onrender.com/api/assess-career", payload, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-        .then((res) => {
-          console.log("Assessment result:", res.data);
-          router.push("/dashboard"); 
-        })
+      .post("https://career-path-api.onrender.com/api/assess-career", payload, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => {
+        console.log("Assessment result:", res.data);
+
+        localStorage.setItem("answers", JSON.stringify(payload.answers));
+
+        router.push("/dashboard");
+      })
         .catch((err) => {
           console.error("Submission failed:", err);
         });
