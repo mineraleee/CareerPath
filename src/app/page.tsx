@@ -9,7 +9,10 @@ import Image from "next/image";
 const registerSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address." }),
   full_name: z.string().min(3, { message: "Full name must be at least 3 characters." }),
-  password: z.string().min(8, { message: "Password must be at least 8 characters." }),
+  password: z
+    .string()
+    .min(8, { message: "Password must be at least 8 characters." })
+    .regex(/\d/, { message: "Password must contain at least one number." }),
 });
 
 export default function RegisterPage() {
